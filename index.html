@@ -1,0 +1,180 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Invaders</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="background">
+        <div id="hero"></div>
+        <div id="missiles"></div>
+        <div id="enemies">
+            <!-- <div class="enemy"></div> -->
+       <!-- so we need more enimies hence we will use loop, create element in js and then loop -->
+        </div>
+        <!-- <div class="result">you win</div> -->
+    </div>
+    <script>
+        var enemies = [{ left: 200, top: 100 },
+        { left: 300, top: 100 },
+        { left: 400, top: 100 },
+        { left: 500, top: 100 },
+        { left: 600, top: 100 },
+        { left: 700, top: 100 },
+        { left: 800, top: 100 } ,
+        { left: 900, top: 100 },
+        { left: 200, top: 175 },
+        { left: 300, top: 175 },
+        { left: 400, top: 175 },
+        { left: 500, top: 175 },
+        { left: 600, top: 175 },
+        { left: 700, top: 175 },
+        { left: 800, top: 175 },
+        { left: 900, top: 175 }];
+        
+        let hero={
+            left:575,
+            top:700
+        }
+        let missiles=[];
+        
+     
+    
+
+
+
+document.onkeydown=function(event){
+console.log(event)
+if(event.keyCode===39 && hero.left<1125){
+    console.log("right arrow pressed")
+
+hero.left=hero.left+10
+
+}
+
+if(event.keyCode===37&& hero.left>20){
+    console.log("left arrow pressed")
+    hero.left=hero.left-10
+
+}
+if(event.keyCode===32){
+    console.log("space is pressed")
+    //now draw missile
+    //we will push new missile in missile array
+    //position of missile should be same as hero position
+    missiles.push({left:hero.left+20,top:hero.top-30})
+    drawMissiles();
+}
+
+console.log(hero)
+drawHero()
+}
+
+function drawHero(){
+document.getElementById("hero").style.left=hero.left+"px"
+document.getElementById("hero").style.top=hero.top+"px"
+}
+
+function drawMissiles()  {
+
+ for(let missile of missiles){
+    document.getElementById("missiles").innerHTML+=`<div class="missile1" style="left:${missile.left}; top:${missile.top}">`
+}
+}
+//document.body.setAttribute("style","background:red")
+//document.body.style.background="orange"
+
+//document.addEventListener("click",)
+function drawEnemies(){
+    //we need to draw enemies inside div enemies so we can use append and createElement, but other way of doing is using innerhtml
+    document.getElementById("enemies").innerHTML="";
+    for(let enemy of enemies){
+   // document.getElementById("enemies").innerHTML=`<div class="enemy">`
+  //by doing this we still get only one div but it should add to existing list but here it is overriding
+    
+  document.getElementById("enemies").innerHTML+=`<div class="enemy" style="left:${enemy.left};top:${enemy.top}  ">`
+
+}
+   // document.getElementById("enemies").innerHTML=`<div class="enemy">`
+
+}
+drawEnemies();
+
+function moveEnemies(){
+    //they are going down
+    //increase top position
+    for(let enemy of enemies){
+        enemy.top=enemy.top+20
+    }
+console.log(enemies)
+
+}
+
+function moveMissiles(){
+    document.getElementById("missiles").innerHTML="";
+    //they are going down
+    //increase top position
+    for(let missile of missiles){
+        missile.top=missile.top-20
+    }
+console.log(enemies)
+
+}
+function shooting(){
+    //when both enemey and missile position are same, we need to remove the enemy
+    //but we have array of missile and array of enemy
+    for(let enemy in enemies){
+        for(let missile in missiles){
+if(missiles[missile].left>=enemies[enemy].left&&
+missiles[missile].left<=(enemies[enemy].left+50)&&
+missiles[missile].top>=enemies[enemy].top&&
+missiles[missile].top<=(enemies[enemy].top+50)
+ ){
+console.log("hitttt")
+//so it is not working becoz we are trying to hit missile with one pixel, so
+//we should consider it as a box and missile also as a box and if both boxes collide
+enemies.splice(enemy,1)
+missiles.splice(missile,1)
+            }
+        }
+    }
+}
+function gameEnd(){
+    if(enemies.length===0){
+        console.log("you win")
+        clearInterval(gamePlay)
+ document.getElementById("background").innerHTML=`<div class="result">You win </div>` 
+    }else if(enemyCheck()){
+        //if enemy touches hero it should end
+        clearInterval(gamePlay)
+        document.getElementById("background").innerHTML=`<div class="result">You loose </div>`
+    }
+}
+const gamePlay=setInterval(function gameLoop(){
+console.log("move")
+
+moveEnemies();
+drawEnemies();
+moveMissiles();
+drawMissiles();
+shooting();
+gameEnd();
+
+//looks like trailing affect
+//remove old enemies and add new enemies
+
+},1000/2);
+
+function enemyCheck(){
+    return enemies.some(enemy=>(enemy.top-50) >(hero.top)
+    )
+}
+
+
+</script>
+</body>
+
+</html>
